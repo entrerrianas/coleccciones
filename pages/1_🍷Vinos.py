@@ -2,12 +2,13 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import scripts.leer_data as sleer 
+import scripts.modificaciones as modi
 
 # Cargar el archivo CSV
 archivo_csv = 'files/vinos.csv'
 #df = pd.read_csv(archivo_csv)
 df = sleer.cargar_archivo(archivo_csv)
-df = sleer.borrar_nan(df)
+df = modi.mod_vinos(df)
 # Título de la aplicación
 st.title('Explorador de Datos')
 
@@ -46,9 +47,12 @@ with tab2:
     # Información detallada de un vino seleccionado
     if not vinos_filtrados.empty:
         st.subheader('Detalles del vino seleccionado')
-        vino_seleccionado = st.selectbox('Selecciona un vino:', vinos_filtrados['Productor'].unique(), key='prod')
+        vinos_filtrados['Mostrar'] = vinos_filtrados['Productor'] + ' - ' + vinos_filtrados['Variedad']
+
+
+        vino_seleccionado = st.selectbox('Selecciona un vino:', vinos_filtrados['Mostrar'].unique(), key='prod')
         if vino_seleccionado:
-            detalles_vino = vinos_filtrados[vinos_filtrados['Productor'] == vino_seleccionado].iloc[0]
+            detalles_vino = vinos_filtrados[vinos_filtrados['Mostrar'] == vino_seleccionado].iloc[0]
             st.write(detalles_vino)
    
     # Gráfico interactivo
@@ -57,12 +61,15 @@ with tab2:
     st.plotly_chart(figura)
 with tab3:
 
-    df_vinos = df
+    # Ejemplo de DataFrame de vinos
+    # Cargar el archivo CSV
 
-    df_vinos['Cosecha'] = df_vinos['Cosecha'].astype(str)
+    
+
+    df['Cosecha'] = df['Cosecha'].astype(str)
     # Sidebar para filtrar por provincia
-    provincia_seleccionada = st.sidebar.selectbox('Selecciona una provincia:', df_vinos['Provincia'].unique())
-    vinos_filtrados = df_vinos[df_vinos['Provincia'] == provincia_seleccionada]
+    provincia_seleccionada = st.sidebar.selectbox('Selecciona una provincia:', df['Provincia'].unique())
+    vinos_filtrados = df[df['Provincia'] == provincia_seleccionada]
 
     # Histograma de Cosechas
     st.subheader('Histograma de Cosechas')
@@ -91,8 +98,8 @@ with tab3:
 
 
     # Conteo de Productores por Ciudad
-    provincia_seleccionada = st.selectbox('Selecciona una provincia:', df_vinos['Provincia'].unique(), key='prov')
-    vinos_de_provincia = df_vinos[df_vinos['Provincia'] == provincia_seleccionada]
+    provincia_seleccionada = st.selectbox('Selecciona una provincia:', df['Provincia'].unique(), key='prov')
+    vinos_de_provincia = df[df['Provincia'] == provincia_seleccionada]
 
     st.subheader('Conteo de Productores por Ciudad')
     conteo_productores_ciudad = vinos_de_provincia['Ciudad'].value_counts()
@@ -121,7 +128,7 @@ with tab3:
     # Gráfico de Barras Apiladas para Uva y Tipos
     st.subheader('Gráfico de Barras Apiladas para Variedades y Tipos')
     fig_barras_apiladas = px.bar(
-        df_vinos,
+        df,
         x='Provincia',
         color='Uva',
         title='Distribución de Uva por Tipo de Vino',

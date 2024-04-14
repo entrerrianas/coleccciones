@@ -28,7 +28,7 @@ df_unido['Año de publicación'] = df_unido['Año de publicación'].fillna(0).as
 
 df_unido['Páginas'] = df_unido['Páginas'].fillna(0).astype(int)
 
-tab1, tab2 = st.tabs(["Información general", "Datos particulares"])
+tab1, tab2, tab3 = st.tabs(["Información general", "Datos particulares", "Varios filtros"])
 
 with tab1:
     # Mostrar el DataFrame resultante
@@ -106,3 +106,19 @@ with tab2:
                 st.text(f"{columna}: {valor}")
             #st.write(detalles_libro)
 
+with tab3:
+    # Lista de opciones
+    
+    lista_total_columna = df_unido['Autor'].apply(lambda x: x.split(';')).explode().tolist()
+    valores_unicos = sorted(set(list(map(lambda x: x.strip() if isinstance(x, str) else x, lista_total_columna))))
+    opciones = list(sorted(set((map(lambda x:x[0].strip().upper(), valores_unicos)))))
+
+
+    # Desplazador para seleccionar la letra inicial
+    letra_inicial = st.select_slider('Selecciona la letra inicial', options=opciones)
+
+    # Filtrar opciones según la letra seleccionada
+    opciones_filtradas = [opcion for opcion in valores_unicos if opcion.startswith(letra_inicial)]
+
+    # Mostrar las opciones filtradas
+    st.write("Opciones filtradas:", opciones_filtradas)
