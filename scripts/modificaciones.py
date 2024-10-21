@@ -1,3 +1,4 @@
+import pandas as pd
 def sacar_acento(letra):
     """
     Función para devolver una letra sin acentro si lo tiene
@@ -22,4 +23,16 @@ def mod_vinos(df):
     df = convertir_string(df, 'Denominación')
     return df
 
+def convertir_fechas(df):
+    df.rename(columns={'Feha inicio': 'Fecha inicio'}, inplace=True)
+    df['Fecha inicio'] = pd.to_datetime(df['Fecha inicio'])
+    df['Fecha final'] = pd.to_datetime(df['Fecha final'])
+    return df
     
+def generar_rutas(df):
+    df_sin_nan = df.copy()
+    df_sin_nan = df_sin_nan.dropna(subset=['Rutas'])
+    df_sin_nan['cat_sep'] = df_sin_nan['Rutas'].str.split('; ')
+    lista_rutas = [item for sublist in df_sin_nan['cat_sep'].tolist() for item in sublist]
+    rutas_unicas = sorted(set(lista_rutas))
+    return rutas_unicas
