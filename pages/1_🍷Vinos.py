@@ -30,7 +30,13 @@ with tab1:
 
 with tab2:
     # Crear una lista desplegable para seleccionar la columna
-    columna_elegida = st.selectbox('Selecciona una columna:', df.columns, key='columna')
+    columnas = [ 'Denominación','Uva', 'Variedad', 'Título', 'Productor', 'Cosecha', 'Tipo',
+       'País', 'Fecha de compra', 'Precio de compra', 'Ubicación', 'Cantidad',
+       'Bebido por', 'Clasificación', 'Regalo', 'Imagen de la etiqueta',
+       'Descripción', 'Comentarios', 'ID', 'Fecha de creación',
+       'Fecha de modificación',  'Provincia', 'Ciudad',
+       'Potencial de guarda']
+    columna_elegida = st.selectbox('Selecciona una columna:', columnas, key='columna')
 
     # Obtener los valores únicos de la columna seleccionada
     valores_columna = sorted(df[columna_elegida].unique())
@@ -42,7 +48,7 @@ with tab2:
     vinos_filtrados = df[df[columna_elegida].isin(valores_seleccionados)]
    
     # Mostrar tabla con vinos filtrados
-    st.dataframe(vinos_filtrados[['Productor', 'Variedad']])
+    st.table(vinos_filtrados[['Denominación', 'Productor', 'Variedad']])
 
     # Información detallada de un vino seleccionado
     if not vinos_filtrados.empty:
