@@ -46,9 +46,20 @@ with tab2:
 
     # Filtrar el DataFrame según los valores seleccionados
     vinos_filtrados = df[df[columna_elegida].isin(valores_seleccionados)]
-   
+    seleccionados = {}
+    # Mostrar checkboxes para seleccionar vinos
+    with st.expander("Selecciona los vinos que deseas ver en detalle:"):
+        for i, row in vinos_filtrados.iterrows():
+            seleccionados[i] = st.checkbox(f"{row['Denominación']} - {row['Productor']} ({row['Variedad']})", key=f"chk_{i}")
+        seleccionados_df = vinos_filtrados.loc[[i for i in seleccionados if seleccionados[i]]]
+    if st.button("Mostrar información de seleccionados"):
+        if not seleccionados_df.empty:
+            st.write("### Vinos seleccionados")
+            st.dataframe(seleccionados_df)  # Muestra toda la info de los seleccionados
+        else:
+            st.warning("No seleccionaste ningún vino.")
     # Mostrar tabla con vinos filtrados
-    st.table(vinos_filtrados[['Denominación', 'Productor', 'Variedad']])
+    #st.table(vinos_filtrados[['Denominación', 'Productor', 'Variedad']])
 
     # Información detallada de un vino seleccionado
     if not vinos_filtrados.empty:
